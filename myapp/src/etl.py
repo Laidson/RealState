@@ -19,3 +19,6 @@ class DataManipulation:
             #read csv
             df = pd.reade_csv(uploaded_file)
         return df
+    
+    def convert_df(self, df):
+        return df.to_csv(index=False).encode('utf-8')
