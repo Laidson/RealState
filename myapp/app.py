@@ -68,7 +68,7 @@ with st.expander('Oportunities :dizzy:', expanded=True):
     st.markdown("#### Featurized Dataset")
     st.write(df_features)
 
-     # convert featurized dataset to csv
+    # convert featurized dataset to csv
     csv = etl.convert_df(df_features)
 
     st.download_button(
@@ -78,3 +78,21 @@ with st.expander('Oportunities :dizzy:', expanded=True):
         "text/csv",
         key='download-csv'
     )
+
+# ML Predictions
+with st.expander('ML forecasting :robot_face:'):
+    st.markdown('## ML forecasting :robot_face:')
+
+    #forecasting dataset
+    df_prediction = pd.DataFrame()
+
+    # convert forecasting dataset to csv
+    csv = etl.convert_df(df_prediction)
+    st.download_button(
+        "Download 🔽",
+        csv,
+        "property_dataset.csv",
+        "text/csv",
+        key='download-csv'
+    )
+
