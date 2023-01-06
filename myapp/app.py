@@ -19,10 +19,12 @@ st.markdown('#### {0} :point_down:'.format('Upload a csv file'))
 uploaded_file = st.file_uploader('Choose a file')
 if uploaded_file is not None:
     #read csv
-    df = pd.reade_csv(uploaded_file)
+    df = pd.read_csv(uploaded_file)
+    uploaded_file.to_csv('data/file.csv')
+    
 
 #TODO retirar df abixo apenas para fixar o df de base de desenvolvimento
-df = pd.read_csv('data/redfin_2023.csv')
+#df = pd.read_csv('data/redfin_2023.csv')
 #st.write(df.head()) # write first 5 rows (remove after testing)
 
 # METRICS
