@@ -3,7 +3,7 @@
 class MlSettings:
     
     PROJECT_NAME = 'real-state-ny'
-    VARIABLE_FILES = False
+    VARIABLE_FILES = True #False <-- original setting
     #Maximum amount of rows to take
     SAMPLE_COUNT = 20000
     FASTAI_LEARNING_RATE = 1e-1

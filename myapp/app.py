@@ -20,7 +20,9 @@ uploaded_file = st.file_uploader('Choose a file')
 if uploaded_file is not None:
     #read csv
     df = pd.read_csv(uploaded_file)
-    uploaded_file.to_csv('data/file.csv')
+    df = DataManipulation().convert_df(df)
+    df.to_csv('data/file.csv')
+    #uploaded_file.to_csv('data/file.csv')
     
 
 #TODO retirar df abixo apenas para fixar o df de base de desenvolvimento
