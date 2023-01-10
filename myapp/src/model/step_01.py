@@ -9,6 +9,8 @@ from fastai.tabular.core import *
 
 
 class MLDataInput:
+
+    DLS_DICT = dict()
     
     
     def __init__(self) -> None:
@@ -323,17 +325,15 @@ class MLDataInput:
 
         # Creat a data frame with each possible TARGET column
         for target in self.TARGET:
+          
             self.create_ml_config_files(target) #files to save fetire names 
             self.auto_detect_cat_conts_variavles(target)
             #TODO decide to insert on this line SHUFFLE_DATA or not ?!?
 
             result_dict = self.find_break_point_feature(target)
             pre_train_test_spit = self.create_tabular_dataset_object(result_dict, target)
-            self.create_train_test_tabular_object(target, pre_train_test_spit)
-
-
-            
-
+            self.DLS_DICT[target] = pre_train_test_spit[f'dls_{target}'] # save the dls target obj on dict 
+            self.create_train_test_tabular_object(target, pre_train_test_spit)      
 
             print()
 
