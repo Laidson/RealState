@@ -2,6 +2,7 @@ import os
 import shutil
 import pandas as pd
 from step_01 import MLDataInput 
+from step_02 import TrainModel
 
 
 
@@ -12,8 +13,12 @@ class Pipeline:
  
     def main(self):   
 
-        #STEP 01
+        #STEP 01 - ML data preparation
         MLDataInput().main()
+
+        #STEP 02 - train|test
+        TrainModel().main()
+
         
 
 

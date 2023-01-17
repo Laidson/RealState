@@ -11,6 +11,7 @@ from fastai.tabular.core import *
 class MLDataInput:
 
     DLS_DICT = dict()
+    DF_DLS = dict()
     
     
     def __init__(self) -> None:
@@ -333,9 +334,11 @@ class MLDataInput:
             result_dict = self.find_break_point_feature(target)
             pre_train_test_spit = self.create_tabular_dataset_object(result_dict, target)
             self.DLS_DICT[target] = pre_train_test_spit[f'dls_{target}'] # save the dls target obj on dict 
-            self.create_train_test_tabular_object(target, pre_train_test_spit)      
+            self.DF_DLS[target] = pre_train_test_spit[f'df_{target}']
+            self.create_train_test_tabular_object(target, pre_train_test_spit) 
 
-            print()
+        return
 
-        return 
+    
+
 
