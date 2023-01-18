@@ -1,3 +1,4 @@
 # Streamtit Project | https://levelup.gitconnected.com/how-to-build-a-real-estate-streamlit-app-in-python-dd21b7c9ed4d
 # start with streamlit |terminal: streamlit run myapp/app.py |https://medium.com/geekculture/how-to-run-your-streamlit-apps-in-vscode-3417da669fc
 # emoji https://streamlit-emoji-shortcodes-streamlit-app-gwckff.streamlit.app/
+# Forecast project | idealista https://www.kaggle.com/code/dataranch/idealista-listings-eda-feature-importance/notebook
