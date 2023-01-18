@@ -1,6 +1,4 @@
-import os
-import shutil
-import pandas as pd
+# Steps
 from step_01 import MLDataInput 
 from step_02 import TrainModel
 

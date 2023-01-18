@@ -163,7 +163,7 @@ class TrainModel:
         if MlSettings.REFRESSOR == True:
             xgb = XGBRegressor()
         else:
-            xgb = XGBClassifier
+            xgb = XGBClassifier()
         
         try:
             xgb.fit(X_train, y_train)
@@ -187,31 +187,37 @@ class TrainModel:
             # create a dataframe of feature importance
             fi_df = fi_df[['feature','importance']]
             fi_df.to_csv(f'{self.PARAM_DIR}/xgb_feature_importance_{target}.csv', index=False)#TODO create a folder
-          
+            
         except: 
             traceback.print_exc()
             print('XGBoost failed')
-              
-        def xgboost_feature_importance(self):
-            out_dir = f'./{MlSettings.PROJECT_NAME}'
-            xgboost_feature_importance_csvs = list()
-            for file in os.listdir(out_dir):#TODO same folder of def fit_xgboost_model files are save
-                if 'xgb_feature_importance' in file and '.csv' in file:
-                    xgboost_feature_importance_csvs.append(pd.read_csv(os.path.join(out_dir, file)))
-            
-            xgboost_feature_importance_cont = pd.concat(xgboost_feature_importance_csvs, axis=0)
-            xgboost_feature_importance_cont.rename(columns={'Unnamed: 0': 'feature'}, inplace=True)
-            print(xgboost_feature_importance_cont.head())
-            xgboost_feature_importance_cont.groupby('feature')['importance'].mean().\
-                                            sort_values(ascending=False).\
-                                            plot(kind='bar', title='XGBoost Overall Feature Importance', figsize=(20, 10))
+        
+        #save model
+        xgb.save_model(f'{self.PARAM_DIR}/model_{target}.json')
+        #self.save_json_model(model=xgb, target=target)
 
-            return
+
+        return {'xgb_model': xgb}
+
+    def xgboost_feature_importance(self):
+        out_dir = f'./{MlSettings.PROJECT_NAME}'
+        xgboost_feature_importance_csvs = list()
+        for file in os.listdir(out_dir):#TODO same folder of def fit_xgboost_model files are save
+            if 'xgb_feature_importance' in file and '.csv' in file:
+                xgboost_feature_importance_csvs.append(pd.read_csv(os.path.join(out_dir, file)))
+        
+        xgboost_feature_importance_cont = pd.concat(xgboost_feature_importance_csvs, axis=0)
+        xgboost_feature_importance_cont.rename(columns={'Unnamed: 0': 'feature'}, inplace=True)
+        print(xgboost_feature_importance_cont.head())
+        xgboost_feature_importance_cont.groupby('feature')['importance'].mean().\
+                                        sort_values(ascending=False).\
+                                        plot(kind='bar', title='XGBoost Overall Feature Importance', figsize=(20, 10))
+
 
 
     def main(self):
         self.get_target_names()
-        for target in ['DAYS ON MARKET', 'PRICE']:#self.targer_list: #TODO return with all feature list
+        for target in self.targer_list:
             dfs = self.get_xy_train_test_df(target)
             X_train = dfs['X_train']
             X_test = dfs['X_test'] 
@@ -228,6 +234,7 @@ class TrainModel:
 
             #Fit XGBoost
             self.fit_xgboost_model(target, X_train, X_test, y_train, y_test)
+           
         return
         
 

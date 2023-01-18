@@ -4,8 +4,10 @@ import glob
 import shutil
 import re
 from ml_settings import MlSettings
+
 from fastai.tabular.all import *
 from fastai.tabular.core import *
+from fastai.tabular.data import *
 
 
 class MLDataInput:
@@ -182,6 +184,20 @@ class MLDataInput:
                 conts_list = f.read().splitlines()
         
         return cat_list, conts_list
+    
+    def update_txt_cat_conts_features(self, target):
+
+        #Populate categorical and continuous lists
+        with open(f'{self.param_dir}/{target}_cats.txt', 'w') as f:
+            for i in self.categorical:
+                f.write("%s\n" % i)
+
+        #saving a Continuous list on txt file
+        with open(f'{self.param_dir}/{target}_conts.txt', 'w') as f:
+            for i in self.continuous:
+                f.write("%s\n" % i)
+
+
 
     def find_break_point_feature(self, target):
         """
@@ -192,7 +208,7 @@ class MLDataInput:
             thus improving the accuracy of predictions.
         """
         
-        df =self.df.copy()
+        df = self.df.copy()
         procs = [Categorify, FillMissing, Normalize]
         df = df[0:MlSettings.SAMPLE_COUNT]
         splits = RandomSplitter()(range_of(df))
@@ -231,6 +247,7 @@ class MLDataInput:
                     if MlSettings.CONVERT_TO_CAT == True:
                         self.categorical.append(var)
                 pass
+            self.continuous = cont_list
             print(f'Continuous variables that made the cut : {cont_list}')
             print(f'Categorical variables that made the cut : {self.categorical}')
             
@@ -240,6 +257,8 @@ class MLDataInput:
                         ,'conts': cont_list #TODO atualizar self.continuous = cont_list?! #self.continuous #TODO talvez cont_list?
                         ,'target':target
                         ,'splits':splits}
+            
+            self.update_txt_cat_conts_features(target=target)
         
         return result
 
@@ -291,9 +310,32 @@ class MLDataInput:
             dls.one_batch()
 
         except:
-            print(f'problem with getting one batch of {MlSettings.PROJECT_NAME}')       
+            print(f'problem with getting one batch of {MlSettings.PROJECT_NAME}')
+
+        #TODO Pensar se é nescessário retirar quando for trabalhar sobre performance do modelo
+        #tentativa de acessar to.columns para excluir '_na" columns
+        #toma muito tempo, melhor no fututo tratar os dados para evitar o surgimento dessas colunas
+        #causado pela presnca de Nan values on the columns
+        # to = TabularDataLoaders.from_df(to, cat_names=result_dict['cats'], cont_names=result_dict['conts'], procs=result_dict['procs'])
+        # to = self.drop_na_new_columns(to)           
 
         return {f'df_{target}': to, f'dls_{target}':dls}
+    
+    def drop_na_new_columns(self, to):
+        #TODO Pensar se é nescessário retirar quando for trabalhar sobre performance do modelo
+        #TODO Tratar data frame antes de fazer treinamentos no modelo
+        """
+        The TabularPandas function from the fastai.tabular library is used to create a TabularDataLoaders object from a Pandas DataFrame. 
+        When creating a new TabularDataLoaders object, the TabularPandas function checks for missing values in the input DataFrame and creates new 
+        columns with the suffix "_na" for each column that contains missing values. These new columns are used to keep track of which values in the original columns were missing.
+        For example, if you have a column "age" with missing values, the TabularPandas function will create a new column "age_na" that has a value of 1 for rows where the "age" 
+        column is missing, and 0 for rows where the "age" column is not missing.
+        This is done so that the TabularDataLoaders object can handle missing values properly during the training and prediction process. If you don't want these columns, 
+        you can drop them after creating the TabularDataLoaders object or drop them before passing the dataframe to TabularPandas function.        
+        """
+        df = to.loc[:,~to.columns.str.endswith('_na')]
+        return df
+
 
     def create_train_test_tabular_object(self, target, info_dict):
         #Built-in split  train/test 80/20 % 
@@ -325,10 +367,10 @@ class MLDataInput:
         self.select_target_columns() # create self.TARGET = list()
 
         # Creat a data frame with each possible TARGET column
-        for target in self.TARGET:
+        for target in ['DAYS ON MARKET', 'PRICE']: #self.TARGET:#TODO return with all feature list
           
             self.create_ml_config_files(target) #files to save fetire names 
-            self.auto_detect_cat_conts_variavles(target)
+            self.auto_detect_cat_conts_variavles(target)# retirar some features from the self.categorical and self.continuous
             #TODO decide to insert on this line SHUFFLE_DATA or not ?!?
 
             result_dict = self.find_break_point_feature(target)
