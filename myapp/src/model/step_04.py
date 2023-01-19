@@ -20,19 +20,19 @@ class ModelPredict:
                     'SALE TYPE':1,
                     'PROPERTY TYPE':1,
                     'STATE OR PROVINCE':1,
-                    'BEDS':1,
-                    'BATHS':1,
+                    'BEDS':3,
+                    'BATHS':2,
                     'STATUS':1,
                     'NEXT OPEN HOUSE START TIME':'No_data',
                     'SOURCE':1,
                     'FAVORITE':1,
                     'INTERESTED':1,
-                    'SQUARE FEET':10,
-                    'LOT SIZE':100,
-                    'YEAR BUILT':10,
-                    'DAYS ON MARKET':1,
-                    '$-SQUARE FEET':100,
-                    'HOA-MONTH': 1
+                    'SQUARE FEET':1733.429185,
+                    'LOT SIZE':2500,
+                    'YEAR BUILT':1925,
+                    'DAYS ON MARKET':6,
+                    '$-SQUARE FEET':1018.227468,
+                    'HOA-MONTH': 1641.819383
                     }
                     #1,5,1,4,3,1,2,1,1,1,1,1,1,2,-0.04853577,-0.37495407,-0.053503655,-0.20085384,-0.42407528,-0.2701332
     def __init__(self) -> None:
@@ -69,13 +69,14 @@ class ModelPredict:
         index = [self.price_input['ID_REQUEST']]
         request = pd.DataFrame(self.price_input, index=index)
         del(request['ID_REQUEST'])
+        #TODO map the cat fetures on train test df and mask the request message
 
         r = {'df': df_shrink(request)
                         ,'procs':[Categorify, FillMissing, Normalize]
                         ,'cats': self.get_categorical_columns()
                         ,'conts': self.get_continuous_columns()
                         ,'target':self.target}
-                        #,'splits':splits}
+                        #,'splits':splits}'''
 
         result = TabularPandas(df=r['df']
                               ,procs=r['procs']
@@ -86,35 +87,32 @@ class ModelPredict:
                                 )
         
         #TODO inspect the data after create the tabularpandas
-        #TODO testar input com dados iguais a um de treino para ver se sofrem os memsmos pre tratamenots.
+        
         to = result.copy()
-        pd.DataFrame(to.train.xs).to_csv(f'{self.PARAM_DIR}/request.csv')
+        pd.DataFrame(to.xs).to_csv(f'{self.PARAM_DIR}/requests/ID{index}_{self.target}_request.csv')
         row = to.items.iloc[0]
         to.decode_row(row)
-
-        request_df = pd.read_csv(f'{self.PARAM_DIR}/request.csv')
-        request_df.drop(request_df.columns[0], axis=1, inplace=True)
-       
-        return request_df
+      
+        return to.xs
         
     def model_perdiction(self, request):
         prediction = self.model.predict(request)
-        
+        print(prediction)
         return prediction
 
 
     def main(self):
-        #recife reature selection to predict
+        #recive feature selection to predict
+
         #load model by target input
-        self.model = self.load_feature_model()        
+        self.model = self.load_feature_model()
+
         #make the prediction
-        request = self.creat_model_inputs()
-
-        #TODO delete #self.mldatainput.create_tabular_dataset_object(result_dict=request, target=self.target)
-
-        peridct = self.model_perdiction(request)
+        #TODO aplly a mask over categorical fetures
+        request = self.creat_model_inputs()      
 
         # give the prediction result back
+        peridct = self.model_perdiction(request)
 
 if __name__ == "__main__"        :
     ModelPredict().main()

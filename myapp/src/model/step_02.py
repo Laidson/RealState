@@ -79,7 +79,7 @@ class TrainModel:
                 models['target_std'] = target_std
 
                 #rename index of 
-                models.to_csv(f'{self.PARAM_DIR}/regression_results_{target}.csv', mode='a', header=True, index=True)#TODO create a new folder
+                models.to_csv(f'{self.PARAM_DIR}/select_models/reg_results/regression_results_{target}.csv', mode='a', header=True, index=True)
             except:
                 print('Issue during lazypredict analysis')
     
@@ -177,7 +177,7 @@ class TrainModel:
             plt.title(f'XGBoost Feature Importance for {MlSettings.PROJECT_NAME} | Target : {target}', wrap=True)
             plt.tight_layout()
             plt.show()
-            plt.savefig(f'{self.PARAM_DIR}/xgb_feature_importance_{target}.png') #TODO inswet a new folder
+            plt.savefig(f'{self.PARAM_DIR}/xgboost/xgb_feature_importance_{target}.png') 
 
             fi_df = pd.DataFrame([xgb.get_booster().get_score()]).T
             fi_df.columns = ['importance']
@@ -186,7 +186,7 @@ class TrainModel:
             fi_df['feature'] = fi_df.index
             # create a dataframe of feature importance
             fi_df = fi_df[['feature','importance']]
-            fi_df.to_csv(f'{self.PARAM_DIR}/xgb_feature_importance_{target}.csv', index=False)#TODO create a folder
+            fi_df.to_csv(f'{self.PARAM_DIR}/xgboost/xgb_feature_importance_{target}.csv', index=False)
             
         except: 
             traceback.print_exc()
@@ -200,7 +200,7 @@ class TrainModel:
         return {'xgb_model': xgb}
 
     def xgboost_feature_importance(self):
-        out_dir = f'./{MlSettings.PROJECT_NAME}'
+        out_dir = f'./{MlSettings.PROJECT_NAME}/xgboost/'
         xgboost_feature_importance_csvs = list()
         for file in os.listdir(out_dir):#TODO same folder of def fit_xgboost_model files are save
             if 'xgb_feature_importance' in file and '.csv' in file:
@@ -212,6 +212,7 @@ class TrainModel:
         xgboost_feature_importance_cont.groupby('feature')['importance'].mean().\
                                         sort_values(ascending=False).\
                                         plot(kind='bar', title='XGBoost Overall Feature Importance', figsize=(20, 10))
+        print()
 
 
 
@@ -227,7 +228,7 @@ class TrainModel:
             #LazyRegressor models
             self.model_selection(target, X_train, X_test, y_train, y_test)
             
-            # #TabNet models #TODO take out the comment code
+            # #TabNet models #TODO take out the comment code AI model in pytorc
             # tabnet_vars = self.tabnel_model_selection(target)          
             # #Tabnet - Auto learning set
             # self.auto_learning_setting(x=tabnet_vars['x'],i=tabnet_vars['i'],learn=tabnet_vars['learn'])

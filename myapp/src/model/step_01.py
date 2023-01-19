@@ -135,6 +135,22 @@ class MLDataInput:
             with open(f'{PARAM_DIR}/{target}_cols_to_delete.txt', 'w') as f:
                 f.write('')
 
+        # Setp 02
+        #  Storage the def model_selection() results
+        if not os.path.exists(f'{PARAM_DIR}/select_models/reg_results/'):
+            os.makedirs(f'{PARAM_DIR}/select_models/reg_results/')    
+        
+        #Storage XGBoost results
+        if not os.path.exists(f'{PARAM_DIR}/xgboost/'):
+            os.makedirs(f'{PARAM_DIR}/xgboost/')
+            
+        # Step_04
+        # storage the requests predictions messages
+        if not os.path.exists(f'{PARAM_DIR}/requests/'):
+            os.makedirs(f'{PARAM_DIR}/requests/')
+
+
+
    
 
     def auto_detect_cat_conts_variavles(self, target):
@@ -148,11 +164,12 @@ class MLDataInput:
         cats = [var for var in self.df.columns if likely_cat[var]]
         conts = [var for var in self.df.columns if not likely_cat[var]]
         
-        # TODO remove targets from features lists
+        # Remove targets from features lists
         try:
             self.categorical.remove(target)            
 
         except: pass
+
         try:
             self.continuous.remove(target)
         except: pass
@@ -306,6 +323,7 @@ class MLDataInput:
                                         )
         dls = to.dataloaders()
         print(f'Tabular Object size: {len(to)}')
+        self.create_mask_dict_for_cat_features(result_dict['df'], to, result_dict['cats'], result_dict['target'])
         try:
             dls.one_batch()
 
@@ -320,6 +338,22 @@ class MLDataInput:
         # to = self.drop_na_new_columns(to)           
 
         return {f'df_{target}': to, f'dls_{target}':dls}
+    
+    def create_mask_dict_for_cat_features(self, df_in, to, cat_list, target):
+        #TODO inset target
+        #TODO open the cat features from txt file
+        #Ex:
+        code_dict = dict()
+        code_dict[target] = dict()
+        df = pd.merge(df_in, to.xs, left_index=True, right_index=True)
+        for cat in cat_list:
+            dict_mask = df.groupby(f'{cat}_x')[f'{cat}_y'].first().to_dict()        
+            code_dict[target].update({cat:dict_mask})
+
+        df_dict = pd.DataFrame.from_dict(code_dict)
+        df_dict.to_json()#TODO vreate a folder to save this    
+        code_dict.to_json(f'{target}_cat_mask.json')
+        return
     
     def drop_na_new_columns(self, to):
         #TODO Pensar se é nescessário retirar quando for trabalhar sobre performance do modelo
