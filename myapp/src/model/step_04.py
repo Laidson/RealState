@@ -17,16 +17,16 @@ class ModelPredict:
     mldatainput = MLDataInput()
 
     price_input = { 'ID_REQUEST':1, #new column
-                    'SALE TYPE':1,
-                    'PROPERTY TYPE':1,
-                    'STATE OR PROVINCE':1,
-                    'BEDS':3,
-                    'BATHS':2,
-                    'STATUS':1,
+                    'SALE TYPE':'MLS Listing',
+                    'PROPERTY TYPE':'Townhouse',
+                    'STATE OR PROVINCE':'NY',
+                    'BEDS':'3.0', ##!!
+                    'BATHS':'2.0', ##!!
+                    'STATUS':'Active',
                     'NEXT OPEN HOUSE START TIME':'No_data',
-                    'SOURCE':1,
-                    'FAVORITE':1,
-                    'INTERESTED':1,
+                    'SOURCE':'BNYMLS',
+                    'FAVORITE':'N',
+                    'INTERESTED':'Y',
                     'SQUARE FEET':1733.429185,
                     'LOT SIZE':2500,
                     'YEAR BUILT':1925,
@@ -62,15 +62,23 @@ class ModelPredict:
     def load_feature_model(self):
         #TODO for now making dor XGboost
         model = XGBRegressor()
-        model.load_model(f'{self.PARAM_DIR}/model_{self.target}.json')
+        model.load_model(f'{self.PARAM_DIR}/prod/model_select/model_{self.target}.json')
         return model
     
     def creat_model_inputs(self):
         index = [self.price_input['ID_REQUEST']]
         request = pd.DataFrame(self.price_input, index=index)
         del(request['ID_REQUEST'])
-        #TODO map the cat fetures on train test df and mask the request message
 
+        #Open and apply the mask over the request msg
+        data = pd.read_json(f'{self.PARAM_DIR}/prod/mask/{self.target}_cat_mask.json').to_dict()
+        mask = data[self.target]
+
+        for col, mask_values in mask.items():
+            request.loc[:, col] = request.loc[:, col].replace(mask_values)
+        
+
+        # treataments as the trainin and test data bellow--->>>
         r = {'df': df_shrink(request)
                         ,'procs':[Categorify, FillMissing, Normalize]
                         ,'cats': self.get_categorical_columns()
@@ -93,7 +101,7 @@ class ModelPredict:
         row = to.items.iloc[0]
         to.decode_row(row)
       
-        return to.xs
+        return request #to.xs
         
     def model_perdiction(self, request):
         prediction = self.model.predict(request)

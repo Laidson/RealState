@@ -1,3 +1,6 @@
+#sys
+import traceback
+
 import streamlit as st
 import pandas as pd
 
@@ -21,10 +24,13 @@ class DataManipulation:
         return df
     
     def convert_df(self, df):
-        
-        df['LONGITUDE'] = df['LONGITUDE'].astype(str)
-        df['LATITUDE'] = df['LATITUDE'].astype(str)
-        df['ZIP OR POSTAL CODE'] = df['ZIP OR POSTAL CODE'].astype(str)
-        df['SOLD DATE'] = pd.to_datetime(df['SOLD DATE'], format="%m/%d/%Y")
+        try:
+            df['LONGITUDE'] = df['LONGITUDE'].astype(str)
+            df['LATITUDE'] = df['LATITUDE'].astype(str)
+            df['ZIP OR POSTAL CODE'] = df['ZIP OR POSTAL CODE'].astype(str)
+            df['SOLD DATE'] = pd.to_datetime(df['SOLD DATE'], format="%m/%d/%Y")
+        except:
+            traceback.print_exc()
+            pass
 
         return df.to_csv(index=False).encode('utf-8')

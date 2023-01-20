@@ -17,16 +17,16 @@ st.markdown('The purpose of this app is to provide summary stats :bar_chart: bas
 st.markdown('#### {0} :point_down:'.format('Upload a csv file'))
 
 uploaded_file = st.file_uploader('Choose a file')
-if uploaded_file is not None:
-    #read csv
-    df = pd.read_csv(uploaded_file)
-    df = DataManipulation().convert_df(df)
-    df.to_csv('data/file.csv')
+# if uploaded_file is not None:
+#     #read csv
+#     df = pd.read_csv(uploaded_file)
+#     df = DataManipulation().convert_df(df)
+#     df.to_csv('data/file.csv')
     #uploaded_file.to_csv('data/file.csv')
     
 
 #TODO retirar df abixo apenas para fixar o df de base de desenvolvimento
-#df = pd.read_csv('data/redfin_2023.csv')
+df = pd.read_csv('data/historical/redfin_2023.csv')
 #st.write(df.head()) # write first 5 rows (remove after testing)
 
 # METRICS
@@ -86,6 +86,33 @@ with st.expander('Oportunities :dizzy:', expanded=True):
 # ML Predictions
 with st.expander('ML forecasting :robot_face:'):
     st.markdown('## ML forecasting :robot_face:')
+
+    #input info for request message
+    st.markdown('Property characteritcs')
+    sales_type = st.text_input('SALE TYPE','MLS Listing')
+    property_type = st.text_input('PROPERTY TYPE','Townhouse')
+    satet = st.text_input('STATE OR PROVINCE','NY')
+    beds = st.text_input('BEDS','3.0')
+    baths = st.text_input('BATHS','2.0')
+    status = st.text_input('STATUS','Active')
+    openhouse_date = st.text_input('NEXT OPEN HOUSE START TIME','No_data')
+    source = st.text_input('SOURCE','BNYMLS')
+    favorite = st.text_input('FAVORITE','N')
+    interested = st.text_input('INTERESTED','Y')
+    sq_feet = st.text_input('SQUARE FEET',1733.429185)
+    lot_size =st.text_input('LOT SIZE',2500)
+    year_build = st.text_input('YEAR BUILT',1925)
+    days_market = st.text_input('DAYS ON MARKET',6)
+    price_sq_feet = st.text_input('$-SQUARE FEET',1018.227468)
+    hoa = st.text_input('HOA-MONTH',1641.81938)
+    price = st.text_input('PRICE',1000.00)
+
+    if st.button("Submit"):
+        st.write('Requesting Prediction :robot_face::thumbsup:')
+        #TODO creating a dict or df with the message request
+        # sent the message to prediction
+
+
 
     #forecasting dataset
     df_prediction = pd.DataFrame()

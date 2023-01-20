@@ -193,7 +193,7 @@ class TrainModel:
             print('XGBoost failed')
         
         #save model
-        xgb.save_model(f'{self.PARAM_DIR}/model_{target}.json')
+        xgb.save_model(f'{self.PARAM_DIR}/prod/model_select/model_{target}.json')
         #self.save_json_model(model=xgb, target=target)
 
 
@@ -202,7 +202,7 @@ class TrainModel:
     def xgboost_feature_importance(self):
         out_dir = f'./{MlSettings.PROJECT_NAME}/xgboost/'
         xgboost_feature_importance_csvs = list()
-        for file in os.listdir(out_dir):#TODO same folder of def fit_xgboost_model files are save
+        for file in os.listdir(out_dir):
             if 'xgb_feature_importance' in file and '.csv' in file:
                 xgboost_feature_importance_csvs.append(pd.read_csv(os.path.join(out_dir, file)))
         

@@ -15,8 +15,8 @@ class Pipeline:
     def main(self):   
 
         #TODO temporary just to delete everything in the folder
-        dir = f'working/{MlSettings.PROJECT_NAME}'
-        shutil.rmtree(dir)
+        # dir = f'working/{MlSettings.PROJECT_NAME}/'
+        # shutil.rmtree(dir)
         
 
         #STEP 01 - ML data preparation

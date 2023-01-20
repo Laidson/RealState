@@ -143,7 +143,15 @@ class MLDataInput:
         #Storage XGBoost results
         if not os.path.exists(f'{PARAM_DIR}/xgboost/'):
             os.makedirs(f'{PARAM_DIR}/xgboost/')
-            
+
+        #Save the models (should be the model for production enviroment)
+        if not os.path.exists(f'{PARAM_DIR}/prod/model_select/'):
+            os.makedirs(f'{PARAM_DIR}/prod/model_select/')
+
+        #Save the mask dictionary for the categorical features
+        if not os.path.exists(f'{PARAM_DIR}/prod/mask/'):
+            os.makedirs(f'{PARAM_DIR}/prod/mask/')
+        
         # Step_04
         # storage the requests predictions messages
         if not os.path.exists(f'{PARAM_DIR}/requests/'):
@@ -351,9 +359,9 @@ class MLDataInput:
             code_dict[target].update({cat:dict_mask})
 
         df_dict = pd.DataFrame.from_dict(code_dict)
-        df_dict.to_json()#TODO vreate a folder to save this    
-        code_dict.to_json(f'{target}_cat_mask.json')
-        return
+        df_dict.to_json()#TODO create a folder to save this    
+        df_dict.to_json(f'{self.param_dir}/prod/mask/{target}_cat_mask.json')
+        
     
     def drop_na_new_columns(self, to):
         #TODO Pensar se é nescessário retirar quando for trabalhar sobre performance do modelo
