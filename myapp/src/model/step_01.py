@@ -1,9 +1,13 @@
+import os
+import sys
+sys.path.append(os.path.normpath(os.getcwd() + "/src"))
+
 import pandas as pd
 import os 
 import glob
 import shutil
 import re
-from ml_settings import MlSettings
+from src.model.ml_settings import MlSettings
 
 from fastai.tabular.all import *
 from fastai.tabular.core import *

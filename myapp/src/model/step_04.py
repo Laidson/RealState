@@ -1,3 +1,7 @@
+import os
+import sys
+sys.path.append(os.path.normpath(os.getcwd() + "/src"))
+
 # data manipulation
 import pandas as pd
 #Fit an xgboost model
@@ -8,8 +12,8 @@ from fastai.tabular.all import *
 from fastai.tabular.core import *
 from fastai.tabular.data import *
 #internal imports
-from ml_settings import MlSettings
-from step_01 import MLDataInput
+from src.model.ml_settings import MlSettings
+from src.model.step_01 import MLDataInput
 
 
 class ModelPredict:

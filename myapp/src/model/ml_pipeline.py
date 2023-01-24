@@ -1,3 +1,7 @@
+import os 
+import sys
+sys.path.append(os.path.normpath(os.getcwd() + "/src"))
+
 import shutil
 from ml_settings import MlSettings
 

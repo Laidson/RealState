@@ -1,3 +1,8 @@
+
+import os
+import sys
+sys.path.append(os.path.normpath(os.getcwd() + "/src"))
+
 #system
 import glob
 import traceback
@@ -24,8 +29,8 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import roc_auc_score
 
 #internal imports
-from ml_settings import MlSettings
-from step_01 import MLDataInput
+from src.model.ml_settings import MlSettings
+from src.model.step_01 import MLDataInput
 
 
 
