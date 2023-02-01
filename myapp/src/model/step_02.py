@@ -233,7 +233,7 @@ class TrainModel:
             #LazyRegressor models
             self.model_selection(target, X_train, X_test, y_train, y_test)
             
-            # #TabNet models #TODO take out the comment code AI model in pytorc
+            # #TabNet models #TODO take out the comment code to start the AI model in pytorc
             # tabnet_vars = self.tabnel_model_selection(target)          
             # #Tabnet - Auto learning set
             # self.auto_learning_setting(x=tabnet_vars['x'],i=tabnet_vars['i'],learn=tabnet_vars['learn'])

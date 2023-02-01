@@ -3,8 +3,11 @@
 import os
 import sys
 import json
+import numpy as np
 import streamlit as st 
 import pandas as pd
+from uuid import uuid4
+
 from src.etl import DataManipulation
 from src.charts import Charts
 from src.newfeatures import NewFeatures
@@ -92,50 +95,29 @@ with st.expander('Oportunities :dizzy:', expanded=False):
     )
 
 # ML Predictions
-# with st.expander('ML forecasting :robot_face:'):
-#     st.markdown('## ML forecasting :robot_face:')
-
-#     #input info for request message
-#     st.markdown('Property characteritcs')
-#     sales_type = st.text_input('SALE TYPE','MLS Listing')
-#     property_type = st.text_input('PROPERTY TYPE','Townhouse')
-#     satet = st.text_input('STATE OR PROVINCE','NY')
-#     beds = st.text_input('BEDS','3.0')
-#     baths = st.text_input('BATHS','2.0')
-#     status = st.text_input('STATUS','Active')
-#     openhouse_date = st.text_input('NEXT OPEN HOUSE START TIME','No_data')
-#     source = st.text_input('SOURCE','BNYMLS')
-#     favorite = st.text_input('FAVORITE','N')
-#     interested = st.text_input('INTERESTED','Y')
-#     sq_feet = st.text_input('SQUARE FEET',1733.429185)
-#     lot_size =st.text_input('LOT SIZE',2500)
-#     year_build = st.text_input('YEAR BUILT',1925)
-#     days_market = st.text_input('DAYS ON MARKET',6)
-#     price_sq_feet = st.text_input('$-SQUARE FEET',1018.227468)
-#     hoa = st.text_input('HOA-MONTH',1641.81938)
-#     price = st.text_input('PRICE',1000.00)
-
 st.markdown('## ML forecasting :robot_face:')
 text_inputs = [
-    {'label': 'SALE TYPE','tag': 'SALE TYPE','value':''},
-    {'label': 'PROPERTY TYPE','tag': 'PROPERTY TYPE','value':''},
-    {'label': 'STATE OR PROVINCE','tag': 'STATE OR PROVINCE','value':''},
-    {'label': 'BEDS','tag': 'BEDS','value':''},
-    {'label': 'STATUS','tag': 'STATUS','value':''},
-    {'label': 'NEXT OPEN HOUSE START TIME','tag': 'NEXT OPEN HOUSE START TIME','value':''},
-    {'label': 'SOURCE','tag': 'SOURCE','value':''},
-    {'label': 'FAVORITE','tag': 'FAVORITE','value':''},
-    {'label': 'INTERESTED','tag': 'INTERESTED','value':''},
-    {'label': 'SQUARE FEET','tag': 'SQUARE FEET','value':''},
-    {'label': 'LOT SIZE','tag': 'LOT SIZE','value':''},
-    {'label': 'YEAR BUILT','tag': 'YEAR BUILT','value':''},
-    {'label': 'DAYS ON MARKET','tag': 'DAYS ON MARKET','value':''},
-    {'label': '$-SQUARE FEET','tag': '$-SQUARE FEET','value':''},
-    {'label': 'HOA-MONTH','tag': 'HOA-MONTH','value':''},
-    {'label': 'PRICE','tag': 'PRICE','value':''}
+    {'label': 'SALE TYPE','tag': 'SALE TYPE','value':'MLS Listing'},
+    {'label': 'PROPERTY TYPE','tag': 'PROPERTY TYPE','value':'Townhouse'},
+    {'label': 'STATE OR PROVINCE','tag': 'STATE OR PROVINCE','value':'NY'},
+    {'label': 'BEDS','tag': 'BEDS','value':'2'},
+    {'label': 'BATHS','tag': 'BATHS','value':'2.5'},
+    {'label': 'STATUS','tag': 'STATUS','value':'Active'},
+    {'label': 'NEXT OPEN HOUSE START TIME','tag': 'NEXT OPEN HOUSE START TIME','value':'No_data'},
+    {'label': 'SOURCE','tag': 'SOURCE','value':'REBNY'},
+    {'label': 'FAVORITE','tag': 'FAVORITE','value':'N'},
+    {'label': 'INTERESTED','tag': 'INTERESTED','value':'Y'},
+    {'label': 'SQUARE FEET','tag': 'SQUARE FEET','value':'1733.42'},
+    {'label': 'LOT SIZE','tag': 'LOT SIZE','value':'1800.0'},
+    {'label': 'YEAR BUILT','tag': 'YEAR BUILT','value':'1930.0'},
+    {'label': 'DAYS ON MARKET','tag': 'DAYS ON MARKET','value':'20'},
+    {'label': '$-SQUARE FEET','tag': '$-SQUARE FEET','value':'1018.22'},
+    {'label': 'HOA-MONTH','tag': 'HOA-MONTH','value':'1641.81'},
+    {'label': 'PRICE','tag': 'PRICE','value':'595000'}
     ]
 
-filter_tag = st.selectbox('CHOSSE THE TARGET:', ['SALE TYPE','PROPERTY TYPE','STATE OR PROVINCE','BEDS','STATUS'
+filter_tag = st.selectbox('CHOSSE THE TARGET:', 
+                                ['SALE TYPE','PROPERTY TYPE','STATE OR PROVINCE','BEDS','BATHS','STATUS'
                                 ,'NEXT OPEN HOUSE START TIME','SOURCE','FAVORITE', 'INTERESTED'
                                 ,'SQUARE FEET','LOT SIZE','YEAR BUILT','DAYS ON MARKET','$-SQUARE FEET'
                                 ,'HOA-MONTH','PRICE'])
@@ -146,16 +128,20 @@ with st.expander('Insert the House Characteritcs :arrow_down_small:'):
     
     for input in text_inputs:
         if input['label'] != filter_tag:
-            input['value'] = st.text_input(input['label'])\
+            input['value'] = st.text_input(input['label'], input['value'])\
                 #.validate(lambda value: value if value is not None and value.strip() != "" else st.error("This field is required"))
                     
     
     if st.button('SUBMMIT'):
         filtered_inputs = [input for input in text_inputs if input['label'] != filter_tag]
         dict_iputs = {input['label']:input['value'] for input in text_inputs if input['label'] != filter_tag}
+        dict_iputs['ID_REQUEST'] = str(uuid4())[:6]
         st.success('Request submmited! : {}'.format(dict_iputs))
 
-        prediction = ModelPredict() # pass the into main(dict_iputs)
+        prediction = ModelPredict(dict_iputs=dict_iputs, target=filter_tag).main()
+
+        st.success(prediction)
+     
         
         #save in a json file
         # with open("text_inputs.json", "w") as f:
@@ -179,3 +165,8 @@ with st.expander('Insert the House Characteritcs :arrow_down_small:'):
     #     key='download-csv'
     # )
 
+df = pd.DataFrame(
+    np.random.randn(10, 2) / [20, 20] + [40.71, -74.00],
+    columns=['lat', 'lon'])
+
+st.map(df)

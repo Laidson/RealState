@@ -8,6 +8,7 @@ import glob
 import shutil
 import re
 from src.model.ml_settings import MlSettings
+#from ml_settings import MlSettings
 
 from fastai.tabular.all import *
 from fastai.tabular.core import *
@@ -363,13 +364,13 @@ class MLDataInput:
             code_dict[target].update({cat:dict_mask})
 
         df_dict = pd.DataFrame.from_dict(code_dict)
-        df_dict.to_json()#TODO create a folder to save this    
+        df_dict.to_json()   
         df_dict.to_json(f'{self.param_dir}/prod/mask/{target}_cat_mask.json')
         
     
     def drop_na_new_columns(self, to):
         #TODO Pensar se é nescessário retirar quando for trabalhar sobre performance do modelo
-        #TODO Tratar data frame antes de fazer treinamentos no modelo
+        #TODO Tratar dataframe antes de fazer treinamentos no modelo
         """
         The TabularPandas function from the fastai.tabular library is used to create a TabularDataLoaders object from a Pandas DataFrame. 
         When creating a new TabularDataLoaders object, the TabularPandas function checks for missing values in the input DataFrame and creates new 
